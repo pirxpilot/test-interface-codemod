@@ -1,6 +1,14 @@
 {
   "name": "test-interface-codemod",
-  "version": "0.1.0",
+  "version": "0.0.0",
+  "description": "A collection of codemods for test interface transformation",
+  "author": {
+    "name": "Damian Krzeminski",
+    "email": "pirxpilot@furkot.com",
+    "url": "https://pirxpilot.me"
+  },
+  "repository": "pirxpilot/test-interface-codemod",
+  "license": "MIT",
   "scripts": {
     "test": "codemod-cli test",
     "test:coverage": "codemod-cli test --coverage",
@@ -9,6 +17,7 @@
   },
   "bin": "./bin/cli.js",
   "keywords": [
+    "codemod",
     "codemod-cli"
   ],
   "dependencies": {
