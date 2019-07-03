@@ -1,6 +1,6 @@
 {
   "name": "test-interface-codemod",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "A collection of codemods for test interface transformation",
   "author": {
     "name": "Damian Krzeminski",
