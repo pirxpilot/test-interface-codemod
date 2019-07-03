@@ -19,6 +19,7 @@ test-interface-codemod <TRANSFORM NAME> path/of/files/ or/some**/*glob.js
 ## Transforms
 
 <!--TRANSFORMS_START-->
+* [exports-to-bdd](transforms/exports-to-bdd/README.md)
 <!--TRANSFORMS_END-->
 
 ## Contributing
