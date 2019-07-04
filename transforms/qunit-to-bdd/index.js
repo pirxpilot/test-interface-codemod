@@ -83,6 +83,8 @@ module.exports = function transformer(file, api) {
   function toIt(p) {
     p.node.expression.callee.name = 'it';
 
+    fixAsync(p);
+
     return p.node;
   }
 
@@ -94,6 +96,35 @@ module.exports = function transformer(file, api) {
     function fixName(name) {
       return ASSERT_MAP[name] || name;
     }
+  }
+
+  function fixAsync(p) {
+    let isAsync = false;
+
+    // get function expression
+    const fe = p.get('expression', 'arguments', 1);
+
+    // remove all stop() calls
+    j(fe).find(j.ExpressionStatement, {
+      expression: {
+        callee: { name: 'stop' }
+      }
+    }).forEach(p => {
+      j(p).remove();
+      isAsync = true;
+    });
+
+    if (!isAsync) {
+      return;
+    }
+
+    // replace start() calls with done()
+    j(fe)
+      .find(j.Identifier, { name: 'start' })
+      .forEach(p => j(p).replaceWith(j.identifier('done')));
+
+    // pass done as a parameter
+    fe.node.params.push(j.identifier('done'));
   }
 
   function getHooks({ properties = [] } = {}) {
