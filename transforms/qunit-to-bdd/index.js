@@ -1,7 +1,16 @@
 const { getParser } = require('codemod-cli').jscodeshift;
 
 const ASSERT_MAP = {
-  'equal': 'should.equal'
+  deepEqual: 'should.deepEqual',
+  equal: 'should.equal',
+  fail: 'should.fail',
+  notOk: 'should.ifError',
+  notDeepEqual: 'should.notDeepEqual',
+  notEqual: 'should.notEqual',
+  notStrictEqual: 'should.notStrictEqual',
+  ok: 'should.ok',
+  strictEqual: 'should.strictEqual',
+  throws: 'should.throws'
 };
 
 module.exports = function transformer(file, api) {
@@ -28,6 +37,8 @@ module.exports = function transformer(file, api) {
         pathTests.push(path);
       }
     });
+
+  fixAssertions(result);
 
   emitDescribe();
 
@@ -66,15 +77,17 @@ module.exports = function transformer(file, api) {
   function toIt(p) {
     p.node.expression.callee.name = 'it';
 
-    j(p).find(j.CallExpression).forEach(path => {
-      path.node.callee.name = fixAssertions(path.node.callee.name);
-    });
-
     return p.node;
   }
 
-  function fixAssertions(name) {
-    return ASSERT_MAP[name] || name;
+  function fixAssertions(p) {
+    p.find(j.CallExpression).forEach(path => {
+      path.node.callee.name = fixName(path.node.callee.name);
+    });
+
+    function fixName(name) {
+      return ASSERT_MAP[name] || name;
+    }
   }
 
 
