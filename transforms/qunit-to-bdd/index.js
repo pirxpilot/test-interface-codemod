@@ -13,6 +13,11 @@ const ASSERT_MAP = {
   throws: 'should.throws'
 };
 
+const HOOKS_MAP = {
+  setup: 'beforeEach',
+  teardown: 'afterEach'
+};
+
 module.exports = function transformer(file, api) {
   const j = getParser(api);
   const root = j(file.source);
@@ -62,9 +67,10 @@ module.exports = function transformer(file, api) {
   function toDescribe() {
     const { 'arguments': args } = pathModule.node.expression;
 
+    const expressions = [...getHooks(args[1]), ...pathTests.map(toIt)];
     const describeArgs = [
       args[0],
-      j.functionExpression(j.identifier(''), [], j.blockStatement(pathTests.map(toIt)))
+      j.functionExpression(j.identifier(''), [], j.blockStatement(expressions))
     ];
     return j.expressionStatement(
       j.callExpression(
@@ -90,6 +96,22 @@ module.exports = function transformer(file, api) {
     }
   }
 
+  function getHooks({ properties = [] } = {}) {
+    return properties.map(makeHook).filter(Boolean);
+
+    function makeHook({ key, value }) {
+      const name = HOOKS_MAP[key.value || key.name];
+      if (!name) {
+        return;
+      }
+      return j.expressionStatement(
+        j.callExpression(
+          j.identifier(name),
+          [ value ]
+        )
+      );
+    }
+  }
 
   function getFirstNode(root) {
     return root.find(j.Program).get('body', 0).node;
