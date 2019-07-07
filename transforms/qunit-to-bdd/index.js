@@ -83,7 +83,9 @@ module.exports = function transformer(file, api) {
   function toIt(p) {
     p.node.expression.callee.name = 'it';
 
-    fixAsync(p);
+    // get function expression
+    const fe = p.get('expression', 'arguments', 1);
+    fixAsync(fe.node);
 
     return p.node;
   }
@@ -98,11 +100,8 @@ module.exports = function transformer(file, api) {
     }
   }
 
-  function fixAsync(p) {
+  function fixAsync(fe) {
     let isAsync = false;
-
-    // get function expression
-    const fe = p.get('expression', 'arguments', 1);
 
     // remove all stop() calls
     j(fe).find(j.ExpressionStatement, {
@@ -124,7 +123,7 @@ module.exports = function transformer(file, api) {
       .forEach(p => j(p).replaceWith(j.identifier('done')));
 
     // pass done as a parameter
-    fe.node.params.push(j.identifier('done'));
+    fe.params.push(j.identifier('done'));
   }
 
   function getHooks({ properties = [] } = {}) {
@@ -135,6 +134,7 @@ module.exports = function transformer(file, api) {
       if (!name) {
         return;
       }
+      fixAsync(value);
       return j.expressionStatement(
         j.callExpression(
           j.identifier(name),
