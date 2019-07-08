@@ -129,10 +129,14 @@ module.exports = function transformer(file, api) {
   function getHooks({ properties = [] } = {}) {
     return properties.map(makeHook).filter(Boolean);
 
-    function makeHook({ key, value }) {
+    function makeHook({ key, value, body }) {
       const name = HOOKS_MAP[key.value || key.name];
       if (!name) {
         return;
+      }
+      if (!value) {
+        // property was an object method
+        value = j.functionExpression(j.identifier(''), [], body);
       }
       fixAsync(value);
       return j.expressionStatement(
