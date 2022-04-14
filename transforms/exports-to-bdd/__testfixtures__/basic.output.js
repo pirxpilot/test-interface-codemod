@@ -9,7 +9,7 @@ function req(language) {
   };
 }
 
-describe('basic.input.js', function () {
+describe('basic.js', function () {
   beforeEach(function () {
     this.res = {
       locals: {}
