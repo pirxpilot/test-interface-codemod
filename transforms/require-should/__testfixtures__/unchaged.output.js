@@ -1,0 +1,1 @@
+window.should.equal(window);
