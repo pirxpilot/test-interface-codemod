@@ -1,4 +1,10 @@
 
+1.2.0 / 2025-03-26
+==================
+
+ * add require should transform
+ * add require-mocha transform
+
 1.1.0 / 2019-07-18
 ==================
 
